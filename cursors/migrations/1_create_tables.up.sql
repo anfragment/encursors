@@ -1,0 +1,7 @@
+CREATE TABLE cursors (
+  id CHAR(32) PRIMARY KEY,
+  os INT NOT NULL,
+  url VARCHAR(2048) NOT NULL,
+  pos_x INT NOT NULL,
+  pos_y INT NOT NULL,
+);
