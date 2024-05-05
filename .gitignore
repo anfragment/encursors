@@ -1,4 +1,4 @@
-/.encore
+**/.encore
+**/encore.gen
 encore.gen.go
 encore.gen.cue
-/encore.gen
