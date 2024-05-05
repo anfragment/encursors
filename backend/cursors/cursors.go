@@ -25,7 +25,7 @@ type Cursor struct {
 }
 
 type GetCursors struct {
-	Cursors []*Cursor
+	Cursors []*Cursor `json:"cursors"`
 }
 
 type GetCursorsParams struct {
