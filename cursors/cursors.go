@@ -1,68 +1,49 @@
 package cursors
 
 import (
-	"net/http"
+	"context"
+	"errors"
 
 	"encore.dev/rlog"
-	"encore.dev/storage/sqldb"
-	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 )
 
-type CursorOS string
+type CursorOS int
 
 const (
-	CursorOSMacOS   CursorOS = "macOS"
-	CursorOSWindows CursorOS = "windows"
-	CursorOSLinux   CursorOS = "linux"
+	CursorOSMacOS CursorOS = iota
+	CursorOSWindows
+	CursorOSLinux
 )
 
 type Cursor struct {
-	id   string
-	os   string
-	url  string
-	posX int
-	posY int
+	Id      string   `json:"id"`
+	Country string   `json:"country"`
+	OS      CursorOS `json:"os"`
+	Path    string   `json:"path"`
+	PosX    int      `json:"posX"`
+	PosY    int      `json:"posY"`
 }
 
-// Subscribe subscribes to cursor updates.
+type GetCursors struct {
+	Cursors []*Cursor
+}
+
+type GetCursorsParams struct {
+	Path string
+}
+
+// Cursors returns all cursors for a given path.
 //
-//encore:api public raw method=GET path=/sub
-func Subscribe(w http.ResponseWriter, req *http.Request) {
-	id := uuid.New().String()
-	ctx := rlog.With("cursor_id", id)
+//encore:api public method=GET path=/cursors
+func Cursors(ctx context.Context, p *GetCursorsParams) (GetCursors, error) {
+	if p.Path == "" {
+		return GetCursors{}, errors.New("specify path in url parameters")
+	}
 
-	c, err := upgrader.Upgrade(w, req, nil)
+	cursors, err := getCursorsByPathFromDB(ctx, p.Path)
 	if err != nil {
-		ctx.Error("error upgrading websocket connection", "err", err)
-		return
+		rlog.Error("failed to retrieve cursors", "error", err)
+		return GetCursors{}, errors.New("failed to retrieve cursors")
 	}
-	defer func() {
-		ctx.Debug("closing websocket connection")
-		c.Close()
-	}()
-
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
-				return
-			}
-			ctx.Error("error reading message", "err", err)
-			return
-		}
-
-		if mt != websocket.TextMessage {
-			ctx.Error("unexpected message type", "type", mt)
-			return
-		}
-
-		ctx.Debug("received message", "message", string(message))
-	}
+	return GetCursors{Cursors: cursors}, nil
 }
-
-var upgrader = websocket.Upgrader{}
-
-var db = sqldb.NewDatabase("cursors", sqldb.DatabaseConfig{
-	Migrations: "./migrations",
-})

@@ -1,7 +1,8 @@
 CREATE TABLE cursors (
-  id CHAR(32) PRIMARY KEY,
+  id CHAR(36) PRIMARY KEY,
   os INT NOT NULL,
-  url VARCHAR(2048) NOT NULL,
+  country CHAR(2) NOT NULL,
+  path VARCHAR(2048) NOT NULL,
   pos_x INT NOT NULL,
-  pos_y INT NOT NULL,
+  pos_y INT NOT NULL
 );
