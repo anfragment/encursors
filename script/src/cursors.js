@@ -65,8 +65,7 @@ import ct from 'countries-and-timezones';
         el = document.createElement('div');
         el.setAttribute('data-cursor-id', cursor.id);
         el.style.position = 'absolute';
-        el.style.left = `${cursor.posX}px`;
-        el.style.top = `${cursor.posY}px`;;
+
         if (zIndex) {
           el.style.zIndex = zIndex;
         }
@@ -75,8 +74,7 @@ import ct from 'countries-and-timezones';
         el.style.alignItems = 'center';
         el.style.justifyContent = 'center';
         el.style.pointerEvents = 'none';
-        document.body.appendChild(el);
-  
+
         const img = document.createElement('img');
         switch (cursor.os) {
         case 0:
@@ -88,6 +86,9 @@ import ct from 'countries-and-timezones';
         case 2:
           img.src = tuxCursor;
           break;
+        default:
+          img.src = macCursor;
+          break;
         }
         img.style.width = '20px';
         img.style.height = '20px';
@@ -98,10 +99,19 @@ import ct from 'countries-and-timezones';
         countryFlag.style.position = 'relative';
         countryFlag.style.left = '-2px';
         el.appendChild(countryFlag);
+
+        const elWidth = el.clientWidth;
+        const elHeight = el.clientHeight;
+        el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
+        el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
+
+        document.body.appendChild(el);
       }
-  
-      el.style.left = `${cursor.posX}px`;
-      el.style.top = `${cursor.posY}px`;
+
+      const elWidth = el.clientWidth;
+      const elHeight = el.clientHeight;
+      el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
+      el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
 
       if (cursor.posX === 0 && cursor.posY === 0) {
         el.style.display = 'none';
@@ -111,6 +121,14 @@ import ct from 'countries-and-timezones';
     }
   }
 })();
+
+function boundByPageHeight(y, elHeight) {
+  return Math.min(Math.max(0, y), window.innerHeight - 1.5*elHeight - 1);
+}
+
+function boundByPageWidth(x, elWidth) {
+  return Math.min(Math.max(0, x), window.innerWidth - 1.5*elWidth - 1);
+}
 
 function getFlagEmoji(countryCode) {
   const codePoints = countryCode.toUpperCase().split('').map(char =>  0x1F1E6 + char.charCodeAt(0) - 'A'.charCodeAt(0));
