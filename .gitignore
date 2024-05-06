@@ -1,4 +1,6 @@
-**/.encore
-**/encore.gen
+.encore
+encore.gen
 encore.gen.go
 encore.gen.cue
+
+node_modules

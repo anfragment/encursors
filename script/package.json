@@ -1,0 +1,17 @@
+{
+  "name": "script",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cursors.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@rollup/plugin-image": "^3.0.3",
+    "rollup": "^4.17.2"
+  }
+}
