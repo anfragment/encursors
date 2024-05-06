@@ -2,8 +2,8 @@ package cursors
 
 import (
 	"context"
-	"errors"
 
+	"encore.dev/beta/errs"
 	"encore.dev/rlog"
 )
 
@@ -37,13 +37,19 @@ type GetCursorsParams struct {
 //encore:api public method=GET path=/cursors
 func Cursors(ctx context.Context, p *GetCursorsParams) (GetCursors, error) {
 	if p.Path == "" {
-		return GetCursors{}, errors.New("specify path in url parameters")
+		return GetCursors{}, &errs.Error{
+			Code:    errs.InvalidArgument,
+			Message: "specify path in url parameters",
+		}
 	}
 
 	cursors, err := getCursorsByPathFromDB(ctx, p.Path)
 	if err != nil {
 		rlog.Error("failed to retrieve cursors", "error", err)
-		return GetCursors{}, errors.New("failed to retrieve cursors")
+		return GetCursors{}, &errs.Error{
+			Code:    errs.Internal,
+			Message: "failed to retrieve cursors",
+		}
 	}
 	return GetCursors{Cursors: cursors}, nil
 }
