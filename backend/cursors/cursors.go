@@ -19,7 +19,7 @@ type Cursor struct {
 	Id      string   `json:"id"`
 	Country string   `json:"country"`
 	OS      CursorOS `json:"os"`
-	Path    string   `json:"path"`
+	URL     string   `json:"url"`
 	PosX    int      `json:"posX"`
 	PosY    int      `json:"posY"`
 }
@@ -29,21 +29,21 @@ type GetCursors struct {
 }
 
 type GetCursorsParams struct {
-	Path string
+	URL string
 }
 
 // Cursors returns all cursors for a given path.
 //
 //encore:api public method=GET path=/cursors
 func Cursors(ctx context.Context, p *GetCursorsParams) (GetCursors, error) {
-	if p.Path == "" {
+	if p.URL == "" {
 		return GetCursors{}, &errs.Error{
 			Code:    errs.InvalidArgument,
-			Message: "specify path in url parameters",
+			Message: "specify url in url parameters",
 		}
 	}
 
-	cursors, err := getCursorsByPathFromDB(ctx, p.Path)
+	cursors, err := getCursorsByURLFromDB(ctx, p.URL)
 	if err != nil {
 		rlog.Error("failed to retrieve cursors", "error", err)
 		return GetCursors{}, &errs.Error{

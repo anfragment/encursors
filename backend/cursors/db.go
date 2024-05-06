@@ -11,13 +11,13 @@ var db = sqldb.NewDatabase("cursors", sqldb.DatabaseConfig{
 })
 
 func writeCursorToDB(ctx context.Context, cursor *Cursor) error {
-	_, err := db.Exec(ctx, "INSERT INTO cursors (id, country, os, path, pos_x, pos_y) VALUES ($1, $2, $3, $4, $5, $6)",
-		cursor.Id, cursor.Country, cursor.OS, cursor.Path, cursor.PosX, cursor.PosY)
+	_, err := db.Exec(ctx, "INSERT INTO cursors (id, country, os, url, pos_x, pos_y) VALUES ($1, $2, $3, $4, $5, $6)",
+		cursor.Id, cursor.Country, cursor.OS, cursor.URL, cursor.PosX, cursor.PosY)
 	return err
 }
 
-func getCursorsByPathFromDB(ctx context.Context, path string) ([]*Cursor, error) {
-	rows, err := db.Query(ctx, "SELECT id, country, os, path, pos_x, pos_y FROM cursors WHERE path = $1", path)
+func getCursorsByURLFromDB(ctx context.Context, url string) ([]*Cursor, error) {
+	rows, err := db.Query(ctx, "SELECT id, country, os, url, pos_x, pos_y FROM cursors WHERE url = $1", url)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func getCursorsByPathFromDB(ctx context.Context, path string) ([]*Cursor, error)
 	var cursors []*Cursor
 	for rows.Next() {
 		var cursor Cursor
-		if err := rows.Scan(&cursor.Id, &cursor.Country, &cursor.OS, &cursor.Path, &cursor.PosX, &cursor.PosY); err != nil {
+		if err := rows.Scan(&cursor.Id, &cursor.Country, &cursor.OS, &cursor.URL, &cursor.PosX, &cursor.PosY); err != nil {
 			return nil, err
 		}
 		cursors = append(cursors, &cursor)

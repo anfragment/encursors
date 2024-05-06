@@ -1,0 +1,1 @@
+CREATE INDEX cursors_url_index ON cursors (url);

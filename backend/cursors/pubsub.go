@@ -22,32 +22,32 @@ type CursorEvent struct {
 
 var subscribersMu sync.RWMutex
 
-// subscribers maps a path to a map of subscriber IDs to channels.
+// subscribers maps URLs to a map of subscriber IDs to channels.
 var subscribers = make(map[string]map[string]chan *CursorEvent)
 
 // fanout sends the cursor to all subscribers.
 func fanout(ctx context.Context, event *CursorEvent) error {
 	subscribersMu.RLock()
 	defer subscribersMu.RUnlock()
-	for _, ch := range subscribers[event.Cursor.Path] {
+	for _, ch := range subscribers[event.Cursor.URL] {
 		ch <- event
 	}
 	return nil
 }
 
 // subToUpdates subscribes a client to cursor updates.
-func subToUpdates(id string, path string, ch chan *CursorEvent, done <-chan struct{}) {
+func subToUpdates(id string, url string, ch chan *CursorEvent, done <-chan struct{}) {
 	subscribersMu.Lock()
 	defer subscribersMu.Unlock()
-	if _, ok := subscribers[path]; !ok {
-		subscribers[path] = make(map[string]chan *CursorEvent)
+	if _, ok := subscribers[url]; !ok {
+		subscribers[url] = make(map[string]chan *CursorEvent)
 	}
-	subscribers[path][id] = ch
+	subscribers[url][id] = ch
 	go func() {
 		<-done
 		subscribersMu.Lock()
 		defer subscribersMu.Unlock()
-		delete(subscribers[path], id)
+		delete(subscribers[url], id)
 	}()
 }
 

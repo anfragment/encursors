@@ -35,16 +35,16 @@ type CursorLeaveWebsocketPayload struct {
 	Id string `json:"id"`
 }
 
-// Subscribe subscribes to cursor updates for a given path.
+// Subscribe subscribes to cursor updates for a given URL.
 //
 //encore:api public raw method=GET path=/subscribe
 func Subscribe(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	query := req.URL.Query()
 
-	path := query.Get("path")
-	if path == "" {
-		http.Error(w, "specify path in url parameters", http.StatusBadRequest)
+	url := query.Get("url")
+	if url == "" {
+		http.Error(w, "specify url in url parameters", http.StatusBadRequest)
 		return
 	}
 
@@ -95,14 +95,14 @@ func Subscribe(w http.ResponseWriter, req *http.Request) {
 
 	events := make(chan *CursorEvent)
 	done := make(chan struct{})
-	go handleIncomingPubSubEvents(ctx, rlog, id, path, events, done, c)
+	go handleIncomingPubSubEvents(ctx, rlog, id, url, events, done, c)
 	defer handleClosure(ctx, rlog, events, done, c)
 
 	cursor := &Cursor{
 		Id:      id,
 		Country: country,
 		OS:      os,
-		Path:    path,
+		URL:     url,
 		PosX:    posX,
 		PosY:    posY,
 	}
@@ -178,8 +178,8 @@ func handleWSComms(ctx context.Context, rlog rlog.Ctx, cursor *Cursor, c *websoc
 	}
 }
 
-func handleIncomingPubSubEvents(_ context.Context, rlog rlog.Ctx, id string, path string, eventsCh chan *CursorEvent, doneCh <-chan struct{}, c *websocket.Conn) {
-	subToUpdates(id, path, eventsCh, doneCh)
+func handleIncomingPubSubEvents(_ context.Context, rlog rlog.Ctx, id string, url string, eventsCh chan *CursorEvent, doneCh <-chan struct{}, c *websocket.Conn) {
+	subToUpdates(id, url, eventsCh, doneCh)
 	for {
 		select {
 		case event := <-eventsCh:

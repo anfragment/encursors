@@ -1,0 +1,2 @@
+ALTER TABLE cursors
+RENAME COLUMN path TO url;
