@@ -1,14 +1,29 @@
 export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
-  const ws = new WebSocket(url);
+  let ws = new WebSocket(url);
+  let open = false;
 
   const onMove = throttle((e) => {
-    const x = e.clientX;
-    const y = e.clientY;
+    if (!open) {
+      return;
+    }
+    const x = Math.floor(e.clientX + window.scrollX);
+    const y = Math.floor(e.clientY + window.scrollY);
     ws.send(JSON.stringify([x, y]));
   }, 3000);
 
   document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseenter', onMove);
+  document.addEventListener('mouseenter', onMove)
+
+  ws.onopen = function() {
+    open = true;
+  };
+
+  ws.onclose = function() {
+    open = false;
+    setTimeout(() => {
+      ws = new WebSocket(url);
+    }, 5000);
+  }
 
   ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
@@ -30,14 +45,14 @@ export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
   };
 }
 
-function throttle(callback, delay) {
+function throttle(cb, delay) {
   let last = 0;
   return function(...args) {
-    const now = new Date().getTime();
+    const now = Date.now();
     if (now - last < delay) {
       return;
     }
     last = now;
-    callback(...args);
-  };
+    cb(...args);
+  }
 }

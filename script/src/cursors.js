@@ -91,8 +91,8 @@ import ct from 'countries-and-timezones';
 
     const elWidth = el.clientWidth;
     const elHeight = el.clientHeight;
-    el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
-    el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
+    el.style.left = `${boundByDocWidth(cursor.posX, elWidth)}px`;
+    el.style.top = `${boundByDocHeight(cursor.posY, elHeight)}px`;
 
     document.body.appendChild(el);
     return el;
@@ -101,13 +101,13 @@ import ct from 'countries-and-timezones';
   function updateCursor(cursor) {
     let el = document.querySelector(`[data-cursor-id="${cursor.id}"]`);
     if (!el) {
-      el = createCursor(cursor);
+      return;
     }
 
     const elWidth = el.clientWidth;
     const elHeight = el.clientHeight;
-    el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
-    el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
+    el.style.left = `${boundByDocWidth(cursor.posX, elWidth)}px`;
+    el.style.top = `${boundByDocHeight(cursor.posY, elHeight)}px`;
     if (cursor.posX === 0 && cursor.posY === 0) {
       el.style.display = 'none';
     } else {
@@ -123,12 +123,12 @@ import ct from 'countries-and-timezones';
   }
 })();
 
-function boundByPageHeight(y, elHeight) {
-  return Math.min(Math.max(0, y), window.innerHeight - 1.5*elHeight - 1);
+function boundByDocHeight(y, elHeight) {
+  return Math.min(Math.max(0, y), document.documentElement.scrollHeight - 1.5*elHeight - 1);
 }
 
-function boundByPageWidth(x, elWidth) {
-  return Math.min(Math.max(0, x), window.innerWidth - 1.5*elWidth - 1);
+function boundByDocWidth(x, elWidth) {
+  return Math.min(Math.max(0, x), document.documentElement.scrollWidth - 1.5*elWidth - 1);
 }
 
 function getFlagEmoji(countryCode) {
