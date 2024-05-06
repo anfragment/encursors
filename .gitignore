@@ -1,3 +1,5 @@
+.DS_Store
+
 .encore
 encore.gen
 encore.gen.go
