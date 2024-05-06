@@ -2,19 +2,17 @@ import macCursor from './assets/mac.svg';
 import windowsCursor from './assets/win.svg';
 import tuxCursor from './assets/tux.svg';
 
-(async () => {
-  const scriptTag = document.currentScript;
-  
-  const apiURL = scriptTag.getAttribute('data-api-url');
-  if (!apiURL) {
-    throw new Error('No API URL provided');
-  }
-  
-  const res = await fetch(apiURL + '/cursors');
-  const json = await res.json();
-  const cursors = json.cursors || [];
-  renderCursors(cursors);
-})();
+const scriptTag = document.currentScript;
+
+const apiURL = scriptTag.getAttribute('data-api-url');
+if (!apiURL) {
+  throw new Error('No API URL provided');
+}
+
+fetch(apiURL + '/cursors')
+  .then(response => response.json())
+  .then(renderCursors)
+  .catch(err => console.error('Error fetching cursors:', err));
 
 function renderCursors(cursors) {
   for (const cursor of cursors) {
