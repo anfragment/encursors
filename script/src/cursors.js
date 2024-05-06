@@ -5,6 +5,12 @@ import { startWS } from './ws';
 import ct from 'countries-and-timezones';
 
 (async () => {
+  const prefersReducedMotion = window.matchMedia(`(prefers-reduced-motion: reduce)`) === true || window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+  if (prefersReducedMotion) {
+    console.log('Reduced motion is enabled');
+    return;
+  }
+
   const os = getOS();
   if (!os) {
     console.log('Unsupported OS');
