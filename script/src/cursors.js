@@ -35,95 +35,90 @@ import ct from 'countries-and-timezones';
 
   const response = await fetch(`https://${apiURL}/cursors?url=${url}`);
   const data = await response.json();
-  const cursors = {};
   for (const cursor of (data.cursors || [])) {
-    cursors[cursor.id] = cursor;
+    createCursor(cursor);
   }
-  renderCursors(cursors);
 
   startWS(
     `wss://${apiURL}/subscribe?url=${url}&country=${countryCode}&os=${os}`,
-    (cursor) => {
-      cursors[cursor.id] = cursor;
-      renderCursors(cursors);
-    },
-    (cursor) => {
-      cursors[cursor.id] = cursor;
-      renderCursors(cursors);
-    },
-    (cursor) => {
-      delete cursors[cursor.id];
-      deleteCursor(cursors);
-    },
+    createCursor,
+    updateCursor,
+    deleteCursor
   );
+
+  function createCursor(cursor) {
+    const el = document.createElement('div');
+    el.setAttribute('data-cursor-id', cursor.id);
+    el.style.position = 'absolute';
+
+    if (zIndex) {
+      el.style.zIndex = zIndex;
+    }
+    el.style.transition = 'left 0.2s, top 0.2s';
+    if (cursor.posX === 0 && cursor.posY === 0) {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'flex';
+    }
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.pointerEvents = 'none';
+
+    const img = document.createElement('img');
+    switch (cursor.os) {
+    case 0:
+      img.src = macCursor;
+      break;
+    case 1:
+      img.src = windowsCursor;
+      break;
+    case 2:
+      img.src = tuxCursor;
+      break;
+    default:
+      img.src = macCursor;
+      break;
+    }
+    img.style.width = '20px';
+    img.style.height = '20px';
+    el.appendChild(img);
+
+    const countryFlag = document.createElement('div');
+    countryFlag.textContent = getFlagEmoji(cursor.country);
+    countryFlag.style.position = 'relative';
+    countryFlag.style.left = '-2px';
+    el.appendChild(countryFlag);
+
+    const elWidth = el.clientWidth;
+    const elHeight = el.clientHeight;
+    el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
+    el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
+
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function updateCursor(cursor) {
+    let el = document.querySelector(`[data-cursor-id="${cursor.id}"]`);
+    if (!el) {
+      el = createCursor(cursor);
+    }
+
+    const elWidth = el.clientWidth;
+    const elHeight = el.clientHeight;
+    el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
+    el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
+    if (cursor.posX === 0 && cursor.posY === 0) {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'flex';
+    }
+  }
 
   function deleteCursor(cursor) {
     const el = document.querySelector(`[data-cursor-id="${cursor.id}"]`);
     if (el) {
       el.remove();
-    }
-  }
-
-  function renderCursors(cursors) {
-    for (const cursor of Object.values(cursors)) {
-      let el = document.querySelector(`[data-cursor-id="${cursor.id}"]`);
-      if (!el) {
-        el = document.createElement('div');
-        el.setAttribute('data-cursor-id', cursor.id);
-        el.style.position = 'absolute';
-
-        if (zIndex) {
-          el.style.zIndex = zIndex;
-        }
-        el.style.transition = 'left 0.2s, top 0.2s';
-        el.style.display = 'flex';
-        el.style.alignItems = 'center';
-        el.style.justifyContent = 'center';
-        el.style.pointerEvents = 'none';
-
-        const img = document.createElement('img');
-        switch (cursor.os) {
-        case 0:
-          img.src = macCursor;
-          break;
-        case 1:
-          img.src = windowsCursor;
-          break;
-        case 2:
-          img.src = tuxCursor;
-          break;
-        default:
-          img.src = macCursor;
-          break;
-        }
-        img.style.width = '20px';
-        img.style.height = '20px';
-        el.appendChild(img);
-  
-        const countryFlag = document.createElement('div');
-        countryFlag.textContent = getFlagEmoji(cursor.country);
-        countryFlag.style.position = 'relative';
-        countryFlag.style.left = '-2px';
-        el.appendChild(countryFlag);
-
-        const elWidth = el.clientWidth;
-        const elHeight = el.clientHeight;
-        el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
-        el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
-
-        document.body.appendChild(el);
-      }
-
-      const elWidth = el.clientWidth;
-      const elHeight = el.clientHeight;
-      el.style.left = `${boundByPageWidth(cursor.posX, elWidth)}px`;
-      el.style.top = `${boundByPageHeight(cursor.posY, elHeight)}px`;
-
-      if (cursor.posX === 0 && cursor.posY === 0) {
-        el.style.display = 'none';
-      } else {
-        el.style.display = 'flex';
-      }
     }
   }
 })();
