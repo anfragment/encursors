@@ -9,7 +9,7 @@ export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
     const x = Math.floor(e.clientX + window.scrollX);
     const y = Math.floor(e.clientY + window.scrollY);
     ws.send(JSON.stringify([x, y]));
-  }, 3000);
+  }, 1500);
 
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseenter', onMove)
