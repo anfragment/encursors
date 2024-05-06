@@ -1,7 +1,7 @@
 export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
   const ws = new WebSocket(url);
 
-  const onMove = debounce((e) => {
+  const onMove = throttle((e) => {
     const x = e.clientX;
     const y = e.clientY;
     ws.send(JSON.stringify([x, y]));
@@ -30,13 +30,14 @@ export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
   };
 }
 
-function debounce(func, wait) {
-  let timeout;
+function throttle(callback, delay) {
+  let last = 0;
   return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      timeout = null;
-      func(...args);
-    }, wait);
+    const now = new Date().getTime();
+    if (now - last < delay) {
+      return;
+    }
+    last = now;
+    callback(...args);
   };
 }
