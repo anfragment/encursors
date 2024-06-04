@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"encore.dev/rlog"
 	"github.com/google/uuid"
@@ -43,8 +44,8 @@ func Subscribe(w http.ResponseWriter, req *http.Request) {
 	query := req.URL.Query()
 
 	url := query.Get("url")
-	if url == "" {
-		http.Error(w, "specify url in url parameters", http.StatusBadRequest)
+	if !validateURL(url) {
+		http.Error(w, "specify valid url in url parameters", http.StatusBadRequest)
 		return
 	}
 
@@ -126,6 +127,8 @@ func handleWSComms(ctx context.Context, rlog rlog.Ctx, cursor *Cursor, c *websoc
 		rlog.Debug("published cursor enter event", "msg_id", msgId)
 	}
 
+	var lastMessageAt time.Time
+
 	for {
 		if ctx.Err() != nil {
 			break
@@ -142,6 +145,13 @@ func handleWSComms(ctx context.Context, rlog rlog.Ctx, cursor *Cursor, c *websoc
 			rlog.Error("unexpected message type", "type", mt)
 			break
 		}
+
+		if time.Since(lastMessageAt) < time.Duration(cfg.MinEventTimeoutMs())*time.Millisecond {
+			rlog.Error("received message too quickly, ignoring", "elapsed", time.Since(lastMessageAt))
+			lastMessageAt = time.Now()
+			continue
+		}
+		lastMessageAt = time.Now()
 
 		pos := [2]int{}
 		if err := json.Unmarshal(message, &pos); err != nil {

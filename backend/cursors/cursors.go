@@ -4,8 +4,16 @@ import (
 	"context"
 
 	"encore.dev/beta/errs"
+	"encore.dev/config"
 	"encore.dev/rlog"
 )
+
+type Config struct {
+	AllowLocalhost    config.Bool
+	MinEventTimeoutMs config.Int
+}
+
+var cfg = config.Load[*Config]()
 
 type CursorOS int
 
@@ -36,10 +44,10 @@ type GetCursorsParams struct {
 //
 //encore:api public method=GET path=/cursors
 func Cursors(ctx context.Context, p *GetCursorsParams) (GetCursors, error) {
-	if p.URL == "" {
+	if !validateURL(p.URL) {
 		return GetCursors{}, &errs.Error{
 			Code:    errs.InvalidArgument,
-			Message: "specify url in url parameters",
+			Message: "invalid URL",
 		}
 	}
 
