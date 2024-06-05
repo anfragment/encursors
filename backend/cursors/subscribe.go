@@ -37,7 +37,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-var totalClients = metrics.NewCounter[uint64]("total_clients", metrics.CounterConfig{})
+var TotalClients = metrics.NewCounter[uint64]("total_clients", metrics.CounterConfig{})
 
 // Subscribe subscribes to cursor updates for a given URL.
 //
@@ -94,7 +94,7 @@ func Subscribe(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	totalClients.Increment()
+	TotalClients.Increment()
 
 	id := uuid.New().String()
 	rlog := rlog.With("cursor_id", id)
