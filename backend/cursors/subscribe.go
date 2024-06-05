@@ -7,16 +7,11 @@ import (
 	"strconv"
 	"time"
 
+	"encore.dev/metrics"
 	"encore.dev/rlog"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
 
 type CursorEnterWebsocketPayload struct {
 	Id      string   `json:"id"`
@@ -35,6 +30,14 @@ type CursorMoveWebsocketPayload struct {
 type CursorLeaveWebsocketPayload struct {
 	Id string `json:"id"`
 }
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+var totalClients = metrics.NewCounter[uint64]("total_clients", metrics.CounterConfig{})
 
 // Subscribe subscribes to cursor updates for a given URL.
 //
@@ -90,6 +93,8 @@ func Subscribe(w http.ResponseWriter, req *http.Request) {
 		rlog.Error("error upgrading websocket connection", "err", err)
 		return
 	}
+
+	totalClients.Increment()
 
 	id := uuid.New().String()
 	rlog := rlog.With("cursor_id", id)
