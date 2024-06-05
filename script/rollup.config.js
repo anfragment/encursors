@@ -6,6 +6,6 @@ export default {
   output: {
     file: './dist/cursors.js',
     format: 'iife',
-  },  
+  },
   plugins: [image(), nodeResolve()],
 };
