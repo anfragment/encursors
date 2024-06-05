@@ -6,6 +6,10 @@ import ct from 'countries-and-timezones';
 import { DEFAULT_API_URL } from './config';
 
 (async () => {
+  console.log(
+    'Collaborative cursors experience on this page is powered by Encursors. Learn more at:\nhttps://github.com/anfragment/encursors'
+  );
+
   const prefersReducedMotion =
     window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
     window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
