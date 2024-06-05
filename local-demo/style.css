@@ -1,0 +1,16 @@
+html, body {
+  background: #f0f0f0;
+  font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+  font-weight: normal;
+}
+
+main {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+p {
+  white-space: pre-line;
+  margin-top: 0;
+  margin-bottom: 3em;
+}
