@@ -11,15 +11,20 @@ import (
 // validateURL validates the URL to ensure it can be used for fetching and subscribing to cursor updates.
 //
 // Returns true if the url is valid, false otherwise.
-func validateURL(targetURL string) bool {
-	url, err := url.Parse(targetURL)
+func validateURL(urlToValidate string) bool {
+	url, err := url.Parse(urlToValidate)
 	if err != nil {
 		rlog.Debug("failed to parse url", "err", err)
 		return false
 	}
 
-	if cfg.AllowLocalhost() && (url.Host == "localhost" || url.Host == "127.0.0.1") {
-		return true
+	if cfg.AllowLocalhost() {
+		if strings.HasSuffix(url.Host, "localhost") {
+			return true
+		}
+		if ip := net.ParseIP(url.Host); ip != nil && ip.IsLoopback() {
+			return true
+		}
 	}
 
 	if url.Host == "" {
