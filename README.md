@@ -12,10 +12,18 @@ Ever feel like a lone wanderer on the digital plains of the web? Do your static 
 
 The backend is build with [Encore](https://encore.dev), a development platform for building event-driven and distributed systems. You can run your own instance by cloning the repostory.
 
-Note: Encursors only works for desktop users, as it relies on the position of the mouse cursor.
+> [!NOTE]
+> Encursors does not display cursors or track users on mobile devices.
 
 ## Demo
 You can see Encursors in action on our [demo page](https://anfragment.github.io/encursors/). Open the page in multiple tabs or devices to see the cursors move in real time!
+
+## Features
+- Displays the flag of the country the visitor is from alongside their cursor.
+- Custom cursors based on the visitor's operating system.
+- Respects the [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting by not displaying the cursors when it is enabled.
+- No cookies or tracking of any kind. Cursor data is permanently deleted after a visitor leaves the page.
+- Fully open source and free to use.
 
 ## Installation
 To install Encursors, simply add the following script tag to your website's HTML:
