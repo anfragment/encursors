@@ -7,7 +7,8 @@
   "scripts": {
     "bundle": "rollup -c",
     "minify": "terser ./dist/cursors.js --compress --mangle --output ./dist/cursors.min.js",
-    "build": "npm run bundle && npm run minify && rm ./dist/cursors.js"
+    "build": "npm run bundle && npm run minify && rm ./dist/cursors.js",
+    "lint": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "countries-and-timezones": "^3.6.0",
+    "prettier": "^3.3.1",
     "rollup": "^4.17.2",
     "terser": "^5.31.0"
   }
