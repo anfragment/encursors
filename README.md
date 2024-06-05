@@ -20,10 +20,10 @@ You can see Encursors in action on our [demo page](https://anfragment.github.io/
 ## Installation
 To install Encursors, simply add the following script tag to your website's HTML:
 ```html
-<script data-api-url="prod-encursors-ypdi.encr.app" src="https://cdn.jsdelivr.net/gh/anfragment/encursors@latest/script/dist/cursors.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/anfragment/encursors@latest/script/dist/cursors.min.js"></script>
 ```
 
 ## Configuration options
 You can configure Encursors by passing options to the script tag as data attributes. Here are the available options:
-- `data-api-url`: The URL of the API. Change this if you're running your own instance.
-- `data-z-index`: The z-index of the cursor elements.
+- `data-api-url`: The base URL of the API. Set if you're running your own instance. Should not include the protocol or the trailing slash.
+- `data-z-index`: The z-index of the cursor elements. Optional.
