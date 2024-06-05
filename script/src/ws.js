@@ -4,17 +4,23 @@ export function startWS(url, onCursorEnter, onCursorMove, onCursorLeave) {
   let ws = new WebSocket(url);
   let open = false;
 
+  let clientX = 0,
+    clientY = 0;
   const onMove = throttle((e) => {
+    if (typeof e.clientX === 'number') {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
     if (!open) {
       return;
     }
-    const x = Math.floor(e.clientX + window.scrollX);
-    const y = Math.floor(e.clientY + window.scrollY);
+    const x = Math.floor(clientX + window.scrollX);
+    const y = Math.floor(clientY + window.scrollY);
     ws.send(JSON.stringify([x, y]));
   }, EVENT_THROTTLE_TIMEOUT_MS);
-
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseenter', onMove);
+  document.addEventListener('scroll', onMove);
 
   ws.onopen = function () {
     open = true;
