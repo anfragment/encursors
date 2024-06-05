@@ -3,44 +3,44 @@ import windowsCursor from './assets/win.svg';
 import tuxCursor from './assets/tux.svg';
 import { startWS } from './ws';
 import ct from 'countries-and-timezones';
+import { DEFAULT_API_URL } from './config';
 
 (async () => {
-  const prefersReducedMotion = window.matchMedia(`(prefers-reduced-motion: reduce)`) === true || window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+  const prefersReducedMotion =
+    window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
+    window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
   if (prefersReducedMotion) {
-    console.log('Reduced motion is enabled');
+    console.debug('Reduced motion is enabled, not showing cursors');
     return;
   }
 
   const os = getOS();
   if (!os) {
-    console.log('Unsupported OS');
+    console.debug('Unsupported OS, not showing cursors');
     return;
   }
   const country = ct.getCountryForTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   if (!country) {
-    console.log('Could not determine country');
+    console.debug('Could not determine country, not showing cursors');
     return;
   }
   const countryCode = country.id;
 
   const scriptTag = document.currentScript;
 
-  const apiURL = scriptTag.getAttribute('data-api-url');
-  if (!apiURL) {
-    throw new Error('No API URL provided');
-  }
+  const apiURL = scriptTag.getAttribute('data-api-url') || DEFAULT_API_URL;
   const zIndex = scriptTag.getAttribute('data-z-index');
 
-  const url = window.location.href.split('?')[0];
+  const url = window.location.href.split('?')[0].split('#')[0];
 
-  const response = await fetch(`https://${apiURL}/cursors?url=${url}`);
+  const response = await fetch(`http://${apiURL}/cursors?url=${url}`);
   const data = await response.json();
-  for (const cursor of (data.cursors || [])) {
+  for (const cursor of data.cursors || []) {
     createCursor(cursor);
   }
 
   startWS(
-    `wss://${apiURL}/subscribe?url=${url}&country=${countryCode}&os=${os}`,
+    `ws://${apiURL}/subscribe?url=${url}&country=${countryCode}&os=${os}`,
     createCursor,
     updateCursor,
     deleteCursor
@@ -66,18 +66,18 @@ import ct from 'countries-and-timezones';
 
     const img = document.createElement('img');
     switch (cursor.os) {
-    case 0:
-      img.src = macCursor;
-      break;
-    case 1:
-      img.src = windowsCursor;
-      break;
-    case 2:
-      img.src = tuxCursor;
-      break;
-    default:
-      img.src = macCursor;
-      break;
+      case 0:
+        img.src = macCursor;
+        break;
+      case 1:
+        img.src = windowsCursor;
+        break;
+      case 2:
+        img.src = tuxCursor;
+        break;
+      default:
+        img.src = macCursor;
+        break;
     }
     img.style.width = '20px';
     img.style.height = '20px';
@@ -124,22 +124,25 @@ import ct from 'countries-and-timezones';
 })();
 
 function boundByDocHeight(y, elHeight) {
-  return Math.min(Math.max(0, y), document.documentElement.scrollHeight - 1.5*elHeight - 1);
+  return Math.min(Math.max(0, y), document.documentElement.scrollHeight - 1.5 * elHeight - 1);
 }
 
 function boundByDocWidth(x, elWidth) {
-  return Math.min(Math.max(0, x), document.documentElement.scrollWidth - 1.5*elWidth - 1);
+  return Math.min(Math.max(0, x), document.documentElement.scrollWidth - 1.5 * elWidth - 1);
 }
 
 function getFlagEmoji(countryCode) {
-  const codePoints = countryCode.toUpperCase().split('').map(char =>  0x1F1E6 + char.charCodeAt(0) - 'A'.charCodeAt(0));
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => 0x1f1e6 + char.charCodeAt(0) - 'A'.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
 }
 
 function getOS() {
   const platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
-      macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
+    macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+    windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
 
   if (macosPlatforms.indexOf(platform) !== -1) {
     return 'mac';
