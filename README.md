@@ -10,7 +10,7 @@
 
 Ever feel like a lone wanderer on the digital plains of the web? Do your static websites seem just a tad too... *static*? Fear not, for Encursors is here to help! This nifty little tool transforms your website into a bustling village square. With a simple script, Encursors displays each visitor's cursor movements in real time, letting everyone see where everyone else is looking. It's like a party on your page, and everyone's invited!
 
-The backend is build with [Encore](https://encore.dev), a development platform for building event-driven and distributed systems. You can run your own instance by cloning the repostory.
+The backend is built and hosted with [Encore](https://encore.dev), a development platform for building event-driven and distributed systems. You can run your own instance by cloning the repostory.
 
 > [!NOTE]
 > Encursors does not display cursors or track users on mobile devices.
