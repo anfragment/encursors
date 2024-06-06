@@ -28,7 +28,7 @@ You can see Encursors in action on our [demo page](https://anfragment.github.io/
 ## Installation
 To install Encursors, simply add the following script tag to your website's HTML:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/anfragment/encursors@latest/script/dist/cursors.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/anfragment/encursors@release/script/dist/cursors.min.js"></script>
 ```
 
 ## Configuration options
