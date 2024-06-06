@@ -37,14 +37,16 @@ import { DEFAULT_API_URL } from './config';
 
   const url = window.location.href.split('?')[0].split('#')[0];
 
-  const response = await fetch(`http://${apiURL}/cursors?url=${url}`);
+  const response = await fetch(
+    `${url.startsWith('https') ? 'https' : 'http'}://${apiURL}/cursors?url=${url}`
+  );
   const data = await response.json();
   for (const cursor of data.cursors || []) {
     createCursor(cursor);
   }
 
   startWS(
-    `ws://${apiURL}/subscribe?url=${url}&country=${countryCode}&os=${os}`,
+    `${url.startsWith('https') ? 'wss' : 'ws'}://${apiURL}/subscribe?url=${url}&country=${countryCode}&os=${os}`,
     createCursor,
     updateCursor,
     deleteCursor
